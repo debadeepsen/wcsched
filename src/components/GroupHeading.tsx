@@ -14,4 +14,3 @@ export const GroupHeading = ({ group, applyBg = false }: { group: string; applyB
     </h3>
   )
 }
-ux
