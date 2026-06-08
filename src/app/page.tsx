@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import MatchCard from '@/components/MatchCard'
 import type { Match } from './types/types'
+import { stringToColor, stringToColorDark } from '@/utils/lib'
+import { GroupHeading } from '@/components/GroupHeading'
 
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([])
@@ -109,21 +111,22 @@ export default function Home() {
                   {/* Iterate over groups within the round */}
                   {Object.entries(groups)
                     .sort((a, b) => a[0].localeCompare(b[0]))
-                    .map(([group, groupMatches]) => (
-                      <div key={group} className='mb-6'>
-                        <h3 className='text-xl font-medium text-gray-700 mb-2'>
-                          Group {group}
-                        </h3>
-                        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-                          {groupMatches
-                            .sort((a, b) => a.MatchNumber - b.MatchNumber)
-                            .map(match => {
-                              const id = `${match.RoundNumber}.${match.MatchNumber}`
-                              return <MatchCard key={id} match={match} />
-                            })}
+                    .map(([group, groupMatches]) => {
+                      return (
+                        <div key={group} className='mb-6'>
+                          <GroupHeading group={group} />
+
+                          <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+                            {groupMatches
+                              .sort((a, b) => a.MatchNumber - b.MatchNumber)
+                              .map(match => {
+                                const id = `${match.RoundNumber}.${match.MatchNumber}`
+                                return <MatchCard key={id} match={match} />
+                              })}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                 </div>
               ))
           )}
