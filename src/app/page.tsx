@@ -66,11 +66,11 @@ export default function Home() {
           <h1 className='text-4xl md:text-6xl font-bold text-gray-800 mb-4'>
             FIFA World Cup 2026
           </h1>
-          <p className='text-xl text-gray-600'>Match Schedule & Fixtures</p>
+          <p className='text-xl text-red-600'>Match Schedule & Fixtures</p>
         </header>
 
         <div className='mb-8'>
-          <div className='bg-white rounded-lg shadow-md p-6'>
+          <div className='bg-yellow-100/60 rounded-lg shadow-xs p-6'>
             <h2 className='text-2xl font-semibold text-gray-800 mb-2'>
               Tournament Overview
             </h2>
