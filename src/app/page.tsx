@@ -1,63 +1,27 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import MatchCard from '@/components/MatchCard'
 import type { Match } from './types/types'
-import { stringToColor, stringToColorDark } from '@/utils/lib'
 import { GroupHeading } from '@/components/GroupHeading'
 
-export default function Home() {
-  const [matches, setMatches] = useState<Match[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchMatches()
-  }, [])
-
-  const fetchMatches = async () => {
-    try {
-      const response = await fetch('/api/world-cup')
-      if (!response.ok) {
-        throw new Error('Failed to fetch matches')
-      }
-      const data = await response.json()
-
-      setMatches(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
+async function getMatches(): Promise<Match[]> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/world-cup`,
+    {
+      // Choose one:
+      // cache: 'force-cache', // static
+      // next: { revalidate: 3600 }, // ISR
+      cache: 'no-store', // always fresh
     }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch matches')
   }
 
-  if (loading) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 to-red-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading World Cup 2026 Schedule...</p>
-        </div>
-      </div>
-    )
-  }
+  return response.json()
+}
 
-  if (error) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 to-red-50 flex items-center justify-center'>
-        <div className='text-center bg-white p-8 rounded-lg shadow-lg'>
-          <h2 className='text-2xl font-bold text-red-600 mb-4'>Error</h2>
-          <p className='text-gray-600 mb-4'>{error}</p>
-          <button
-            onClick={fetchMatches}
-            className='bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors'
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    )
-  }
+export default async function Home() {
+  const matches = await getMatches()
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-red-50'>
@@ -82,24 +46,26 @@ export default function Home() {
           </div>
         </div>
 
-        <div className='grid gap-6'>
+        <div className='w-fit mx-auto'>
           {matches.length === 0 ? (
             <div className='text-center bg-white p-8 rounded-lg shadow-lg'>
               <p className='text-gray-600'>No matches found in the schedule.</p>
             </div>
           ) : (
-            // Group matches by round number then by group
             Object.entries(
               matches.reduce(
                 (acc: Record<number, Record<string, Match[]>>, match) => {
                   const round = match.RoundNumber
                   const group = match.Group
+
                   if (!acc[round]) acc[round] = {}
                   if (!acc[round][group]) acc[round][group] = []
+
                   acc[round][group].push(match)
+
                   return acc
                 },
-                {} as Record<number, Record<string, Match[]>>
+                {}
               )
             )
               .sort((a, b) => Number(a[0]) - Number(b[0]))
@@ -108,25 +74,31 @@ export default function Home() {
                   <h2 className='text-2xl font-semibold text-gray-800 mb-4'>
                     Round {round}
                   </h2>
-                  {/* Iterate over groups within the round */}
+
                   {Object.entries(groups)
                     .sort((a, b) => a[0].localeCompare(b[0]))
-                    .map(([group, groupMatches]) => {
-                      return (
-                        <div key={group} className='mb-6'>
-                          <GroupHeading group={group} />
+                    .map(([group, groupMatches]) => (
+                      <div key={group} className='mb-6'>
+                        <GroupHeading group={group} />
 
-                          <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-                            {groupMatches
-                              .sort((a, b) => a.MatchNumber - b.MatchNumber)
-                              .map(match => {
-                                const id = `${match.RoundNumber}.${match.MatchNumber}`
-                                return <MatchCard key={id} match={match} />
-                              })}
-                          </div>
+                        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
+                          {groupMatches
+                            .sort(
+                              (a, b) => a.MatchNumber - b.MatchNumber
+                            )
+                            .map(match => {
+                              const id = `${match.RoundNumber}.${match.MatchNumber}`
+
+                              return (
+                                <MatchCard
+                                  key={id}
+                                  match={match}
+                                />
+                              )
+                            })}
                         </div>
-                      )
-                    })}
+                      </div>
+                    ))}
                 </div>
               ))
           )}
