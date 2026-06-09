@@ -13,11 +13,11 @@ export default function MatchCard({ match }: { match: Match }) {
         <div className='flex-1'>
           <div className='flex items-center justify-between mb-4'>
             <div className='flex items-center justify-between bg-red-100 w-full p-2 rounded-md text-lg font-semibold text-gray-800'>
-              <div className='flex items-center'>
+              <div className='flex items-center text-[#222a]'>
                 <CountryFlag team={match.HomeTeam} />
                 {match.HomeTeam}
               </div>
-              <div className='flex items-center'>
+              <div className='flex items-center text-[#222a]'>
                 <CountryFlag team={match.AwayTeam} />
                 {match.AwayTeam}
               </div>

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 8000",
+    "launch": "npm run dev && sleep 2 && start http://localhost:8000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
