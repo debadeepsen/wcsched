@@ -18,11 +18,11 @@ export default function MatchCard({ match }: { match: Match }) {
         <div className='flex-1'>
           <div className='flex items-center justify-between mb-4'>
             <div className='flex items-center justify-between bg-red-700/10 dark:bg-red-200/10 w-full p-2 rounded-md text-lg font-semibold text-gray-800 dark:text-white'>
-              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal'>
+              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal text-sm lg:text-lg'>
                 <CountryFlag team={match.HomeTeam} />
                 {match.HomeTeam}
               </div>
-              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal'>
+              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal text-sm lg:text-lg'>
                 <CountryFlag team={match.AwayTeam} />
                 {match.AwayTeam}
               </div>
