@@ -10,3 +10,8 @@ export type Match = {
   AwayTeamScore: any
   Winner: string
 }
+
+export type MatchPrediction = {
+  homeWin: number
+  awayWin: number
+}

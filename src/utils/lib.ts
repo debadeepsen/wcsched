@@ -1,3 +1,6 @@
+import { MatchPrediction } from '@/app/types/types'
+import { wc_elo } from '@/data/wc_elo'
+
 export const stringToColor = (str: string, opacity?: number) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
@@ -124,6 +127,33 @@ export function formatMatchDate(utcDateString: string): string {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true
-  })
-    .format(date)
+  }).format(date)
+}
+
+export function eloWinProbability(teamAElo: number, teamBElo: number): number {
+  return 1 / (1 + Math.pow(10, (teamBElo - teamAElo) / 400))
+}
+
+export function predictMatch(homeTeam: string, awayTeam: string): MatchPrediction {
+  let homeElo: number | undefined = wc_elo.find(
+    team => team?.team === homeTeam
+  )?.elo
+  let awayElo: number | undefined = wc_elo.find(
+    team => team?.team === awayTeam
+  )?.elo
+
+  if (!homeElo || !awayElo) {
+    return { homeWin: 0.5, awayWin: 0.5 }
+  }
+
+  const homeWin = eloWinProbability(homeElo, awayElo)
+
+  return {
+    homeWin,
+    awayWin: 1 - homeWin
+  }
+}
+
+export function checkIfFirstCharIsNumeric(str: string) {
+  return typeof str === 'string' && /^\d/.test(str);
 }

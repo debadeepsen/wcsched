@@ -83,9 +83,7 @@ export default async function Home() {
 
                         <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
                           {groupMatches
-                            .sort(
-                              (a, b) => a.MatchNumber - b.MatchNumber
-                            )
+                            .sort((a, b) => a.MatchNumber - b.MatchNumber)
                             .map(match => {
                               const id = `${match.RoundNumber}.${match.MatchNumber}`
 
