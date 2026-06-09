@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
 
 type Theme = 'light' | 'dark' | 'system'
@@ -52,14 +53,27 @@ export default function ThemeToggle() {
     applyTheme(next as Theme)
   }
 
+  const toggles = {
+    light: {
+      text: 'Dark',
+      icon: 'lucide:moon',
+    },
+    dark: {
+      text: 'Light',
+      icon: 'lucide:sun'
+    },
+    system: {
+      text: 'System',
+      icon: 'lucide:laptop'
+    }
+  }
+
   return (
     <button
       onClick={toggle}
-      className='m-2 p-2 rounded bg-gray-200 dark:bg-[#0004] text-gray-800 dark:text-gray-200 text-xs'
+      className='fixed top-2 right-2 p-2 rounded bg-gray-200 dark:bg-[#0004] text-gray-800 dark:text-gray-200 text-xs flex items-center gap-2'
     >
-      {theme === 'light' && 'Switch to Dark'}
-      {theme === 'dark' && 'Switch to System'}
-      {theme === 'system' && 'Switch to Light'}
+      Switch to {toggles[theme].text} <Icon inline icon={toggles[theme].icon} fontSize={16} />
     </button>
   )
 }

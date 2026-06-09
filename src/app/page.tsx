@@ -26,7 +26,7 @@ export default async function Home() {
   return (
     <div className='min-h-screen bg-gray-100 dark:bg-[#1e1b1b]'>
       <div className='container mx-auto px-4 py-8'>
-        <header className='text-center mb-12'>
+        <header className='text-center mt-4 mb-12'>
           <h1 className='text-4xl md:text-6xl font-bold dark:font-semibold text-gray-800 dark:text-gray-200 mb-4'>
             FIFA World Cup 2026
           </h1>
