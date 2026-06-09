@@ -13,7 +13,7 @@ export const CountryFlag = ({ team }: { team: string }) => {
         COUNTRY_ISO2[team] +
         '.svg'
       }
-      className='w-6 h-4 mr-1 text-gray-400 border border-gray-200'
+      className='w-6 h-4 mr-2 text-gray-400'
     />
   )
 }

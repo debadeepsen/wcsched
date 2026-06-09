@@ -24,21 +24,21 @@ export default async function Home() {
   const matches = await getMatches()
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-red-50'>
+    <div className='min-h-screen bg-gray-100 dark:bg-[#1e1b1b]'>
       <div className='container mx-auto px-4 py-8'>
         <header className='text-center mb-12'>
-          <h1 className='text-4xl md:text-6xl font-bold text-gray-800 mb-4'>
+          <h1 className='text-4xl md:text-6xl font-bold dark:font-semibold text-gray-800 dark:text-gray-200 mb-4'>
             FIFA World Cup 2026
           </h1>
           <p className='text-xl text-red-600'>Match Schedule & Fixtures</p>
         </header>
 
         <div className='mb-8'>
-          <div className='bg-yellow-100/60 rounded-lg shadow-xs p-6'>
-            <h2 className='text-2xl font-semibold text-gray-800 mb-2'>
+          <div className='bg-yellow-100/60 dark:bg-yellow-100/20 rounded-lg shadow-xs p-6'>
+            <h2 className='text-2xl font-semibold dark:font-normal text-gray-800 dark:text-gray-200 mb-2'>
               Tournament Overview
             </h2>
-            <p className='text-gray-600'>
+            <p className='text-gray-600 dark:text-gray-400'>
               The 2026 FIFA World Cup will be hosted across 16 cities in the
               United States, Canada, and Mexico. This will be the first World
               Cup with 48 teams participating.
@@ -71,7 +71,7 @@ export default async function Home() {
               .sort((a, b) => Number(a[0]) - Number(b[0]))
               .map(([round, groups]) => (
                 <div key={round} className='mb-8'>
-                  <h2 className='text-2xl font-semibold text-gray-800 mb-4'>
+                  <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4'>
                     Round {round}
                   </h2>
 

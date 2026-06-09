@@ -1,23 +1,23 @@
 import type { Match } from '@/app/types/types'
 import { LocationIconSVG } from './LocationIconSVG'
 import { DateIconSVG } from './DateIconSVG'
-import { COUNTRY_ISO2, formatMatchDate } from '@/utils/lib'
+import { formatMatchDate } from '@/utils/lib'
 import { CountryFlag } from './CountryFlag'
 
 export default function MatchCard({ match }: { match: Match }) {
   const date = formatMatchDate(match.DateUtc)
   const [datePart, timePart] = date.split(' at ')
   return (
-    <div className='bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
+    <div className='bg-white dark:bg-[#0005] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
       <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
         <div className='flex-1'>
           <div className='flex items-center justify-between mb-4'>
-            <div className='flex items-center justify-between bg-red-100 w-full p-2 rounded-md text-lg font-semibold text-gray-800'>
-              <div className='flex items-center text-[#222a]'>
+            <div className='flex items-center justify-between bg-red-700/10 dark:bg-red-200/10 w-full p-2 rounded-md text-lg font-semibold text-gray-800 dark:text-white'>
+              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal'>
                 <CountryFlag team={match.HomeTeam} />
                 {match.HomeTeam}
               </div>
-              <div className='flex items-center text-[#222a]'>
+              <div className='flex items-center text-[#222a] dark:text-gray-200 dark:font-normal'>
                 <CountryFlag team={match.AwayTeam} />
                 {match.AwayTeam}
               </div>
