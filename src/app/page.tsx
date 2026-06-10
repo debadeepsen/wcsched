@@ -35,7 +35,7 @@ export default async function Home() {
         </header>
 
         <div className='mb-8'>
-          <div className='bg-yellow-100/60 dark:bg-yellow-100/20 rounded-lg shadow-xs p-6'>
+          <div className='bg-yellow-100/50 dark:bg-yellow-800/5 rounded-lg shadow-xs p-6'>
             <h2 className='text-2xl font-semibold dark:font-normal text-gray-800 dark:text-gray-200 mb-2'>
               Tournament Overview
             </h2>
