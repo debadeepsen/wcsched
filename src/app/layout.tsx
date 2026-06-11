@@ -3,7 +3,10 @@ import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
   title: 'World Cup 2026 Schedule',
-  description: 'FIFA World Cup 2026 match schedule and fixtures'
+  description: 'FIFA World Cup 2026 match schedule and fixtures',
+  icons: {
+    icon: '/soccer.ico'
+  }
 }
 
 export default function RootLayout({
