@@ -1,6 +1,7 @@
 import MatchCard from '@/components/MatchCard'
 import type { Match } from './types/types'
 import { GroupHeading } from '@/components/GroupHeading'
+import CalendarButton from '@/components/CalendarButton'
 
 async function getMatches(): Promise<Match[]> {
   const response = await fetch(
@@ -31,7 +32,10 @@ export default async function Home() {
             <img src='/fifawc.png' width={60} height={60} />
             FIFA World Cup 2026
           </h1>
-          <p className='text-xl text-red-600'>Match Schedule & Fixtures</p>
+          <p className='text-xl text-red-600 mb-6'>Match Schedule & Fixtures</p>
+          <div className="flex justify-center">
+            <CalendarButton matches={matches} />
+          </div>
         </header>
 
         <div className='mb-8'>
