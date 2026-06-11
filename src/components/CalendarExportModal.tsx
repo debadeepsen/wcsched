@@ -9,6 +9,7 @@ import {
   CalendarExportOptions
 } from '../utils/calendar'
 import { CountryFlag } from './CountryFlag'
+import { formatMatchDate } from '@/utils/lib'
 
 interface CalendarExportModalProps {
   isOpen: boolean
@@ -169,27 +170,6 @@ export default function CalendarExportModal({
 
         {/* Content Body - Scrollable */}
         <div className='flex-1 overflow-y-auto p-6 space-y-8'>
-          {/* Quick Select Options */}
-          {/* <section>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-              Quick Select
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              <button onClick={selectAll} className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors">
-                Select All Matches
-              </button>
-              {STAGES.map(stage => (
-                <button 
-                  key={stage.id} 
-                  onClick={() => selectStage(stage.id)}
-                  className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {stage.label}
-                </button>
-              ))}
-            </div>
-          </section> */}
-
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             {/* Match Selection & Filter */}
             <section className='flex flex-col h-[400px]'>
@@ -217,39 +197,35 @@ export default function CalendarExportModal({
               </div>
 
               <div className='flex-1 border border-gray-200 dark:border-gray-700 rounded-md overflow-y-auto p-2 bg-gray-50 dark:bg-[#1e1b1b]'>
-                {displayedMatches.map(match => (
-                  <label
-                    key={match.MatchNumber}
-                    className='flex items-start p-2 hover:bg-white dark:hover:bg-[#2b2727] rounded cursor-pointer transition-colors'
-                  >
-                    <input
-                      type='checkbox'
-                      className='mt-1 mr-3 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700'
-                      checked={selectedMatches.has(match.MatchNumber)}
-                      onChange={() => toggleMatch(match.MatchNumber)}
-                    />
-                    <div className='flex-1 min-w-0'>
-                      <div className='text-sm font-medium text-gray-900 dark:text-gray-100 truncate text-left flex items-center gap-2'>
-                        <CountryFlag team={match.HomeTeam} mr={0} />{' '}
-                        {match.HomeTeam}{' '}
-                        <span className='mx-2 text-xs'>vs</span>{' '}
-                        <CountryFlag team={match.AwayTeam} mr={0} />{' '}
-                        {match.AwayTeam}
+                {displayedMatches.map(match => {
+                  const { date, time } = formatMatchDate(match.DateUtc)
+                  return (
+                    <label
+                      key={match.MatchNumber}
+                      className='flex items-start p-2 hover:bg-white dark:hover:bg-[#2b2727] rounded cursor-pointer transition-colors'
+                    >
+                      <input
+                        type='checkbox'
+                        className='mt-1 mr-3 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700'
+                        checked={selectedMatches.has(match.MatchNumber)}
+                        onChange={() => toggleMatch(match.MatchNumber)}
+                      />
+                      <div className='flex-1 min-w-0'>
+                        <div className='text-sm font-medium text-gray-900 dark:text-gray-100 truncate text-left flex items-center gap-2'>
+                          <CountryFlag team={match.HomeTeam} mr={0} />{' '}
+                          {match.HomeTeam}{' '}
+                          <span className='mx-2 text-xs'>vs</span>{' '}
+                          <CountryFlag team={match.AwayTeam} mr={0} />{' '}
+                          {match.AwayTeam}
+                        </div>
+                        <div className='text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3 mt-1'>
+                          <span>{date}</span>
+                          <span>{time}</span>
+                        </div>
                       </div>
-                      <div className='text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3 mt-1'>
-                        <span>
-                          {new Date(match.DateUtc).toLocaleDateString()}
-                        </span>
-                        <span>
-                          {new Date(match.DateUtc).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}{' '}
-                        </span>
-                      </div>
-                    </div>
-                  </label>
-                ))}
+                    </label>
+                  )
+                })}
               </div>
             </section>
 

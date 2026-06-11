@@ -127,7 +127,7 @@ export function formatMatchDate(utcDateString: string) {
     year: 'numeric'
   })
   const time = utcDate.toLocaleTimeString([], {
-    hour: '2-digit',
+    hour: 'numeric',
     minute: '2-digit'
   })
   return { date, time }
