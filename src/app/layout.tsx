@@ -6,7 +6,10 @@ export const metadata = {
   description: 'FIFA World Cup 2026 match schedule and fixtures',
   icons: {
     icon: '/soccer.ico'
-  }
+  },
+  openGraph: {
+    images: ['/fifawc.png'],
+  },
 }
 
 export default function RootLayout({
