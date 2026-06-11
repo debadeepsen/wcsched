@@ -116,25 +116,31 @@ export const COUNTRY_ISO2: Record<string, string> = {
   Uzbekistan: 'UZ'
 }
 
-export function formatMatchDate(utcDateString: string): string {
-  if (!utcDateString) return 'Not scheduled'
-  const date = new Date(utcDateString)
+export function formatMatchDate(utcDateString: string) {
+  if (!utcDateString) return { date: 'Not scheduled', time: '' }
 
-  return new Intl.DateTimeFormat(undefined, {
+  const utcDate = new Date(utcDateString)
+
+  const date = utcDate.toLocaleDateString([], {
     day: 'numeric',
     month: 'long',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }).format(date)
+    year: 'numeric'
+  })
+  const time = utcDate.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+  return { date, time }
 }
 
 export function eloWinProbability(teamAElo: number, teamBElo: number): number {
   return 1 / (1 + Math.pow(10, (teamBElo - teamAElo) / 400))
 }
 
-export function predictMatch(homeTeam: string, awayTeam: string): MatchPrediction {
+export function predictMatch(
+  homeTeam: string,
+  awayTeam: string
+): MatchPrediction {
   let homeElo: number | undefined = wc_elo.find(
     team => team?.team === homeTeam
   )?.elo
@@ -155,5 +161,5 @@ export function predictMatch(homeTeam: string, awayTeam: string): MatchPredictio
 }
 
 export function checkIfFirstCharIsNumeric(str: string) {
-  return typeof str === 'string' && /^\d/.test(str);
+  return typeof str === 'string' && /^\d/.test(str)
 }

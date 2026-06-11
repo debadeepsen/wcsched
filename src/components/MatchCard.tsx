@@ -1,16 +1,21 @@
 import type { Match } from '@/app/types/types'
 import { LocationIconSVG } from './LocationIconSVG'
 import { DateIconSVG } from './DateIconSVG'
-import { checkIfFirstCharIsNumeric, formatMatchDate, predictMatch } from '@/utils/lib'
+import {
+  checkIfFirstCharIsNumeric,
+  formatMatchDate,
+  predictMatch
+} from '@/utils/lib'
 import { CountryFlag } from './CountryFlag'
 
 export default function MatchCard({ match }: { match: Match }) {
-  const date = formatMatchDate(match.DateUtc)
+  const { date, time } = formatMatchDate(match.DateUtc)
   const { homeWin, awayWin } = predictMatch(match.HomeTeam, match.AwayTeam)
   const isHomeWin = homeWin > awayWin
-  const [datePart, timePart] = date.split(' at ')
 
-  const showOdds = [match.HomeTeam, match.AwayTeam].every(e => !checkIfFirstCharIsNumeric(e) && !e.startsWith('To be'))
+  const showOdds = [match.HomeTeam, match.AwayTeam].every(
+    e => !checkIfFirstCharIsNumeric(e) && !e.startsWith('To be')
+  )
 
   return (
     <div className='bg-white dark:bg-[#0005] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
@@ -32,9 +37,9 @@ export default function MatchCard({ match }: { match: Match }) {
           <div className='text-sm flex flex-col items-center gap-4 text-gray-600 dark:text-gray-400'>
             <div className='flex items-center'>
               <DateIconSVG />
-              {datePart}{' '}
+              {date}{' '}
               <span className='ml-1 text-md font-bold text-gray-500 dark:text-gray-300'>
-                {timePart}
+                {time}
               </span>
             </div>
             {showOdds && (
