@@ -1,15 +1,10 @@
 import type { Match } from '@/app/types/types'
 import { LocationIconSVG } from './LocationIconSVG'
-import { DateIconSVG } from './DateIconSVG'
-import {
-  checkIfFirstCharIsNumeric,
-  formatMatchDate,
-  predictMatch
-} from '@/utils/lib'
+import { checkIfFirstCharIsNumeric, predictMatch } from '@/utils/lib'
 import { CountryFlag } from './CountryFlag'
+import { CardDateDisplay } from './CardDateDisplay'
 
 export default function MatchCard({ match }: { match: Match }) {
-  const { date, time } = formatMatchDate(match.DateUtc)
   const { homeWin, awayWin } = predictMatch(match.HomeTeam, match.AwayTeam)
   const isHomeWin = homeWin > awayWin
 
@@ -36,11 +31,7 @@ export default function MatchCard({ match }: { match: Match }) {
 
           <div className='text-sm flex flex-col items-center gap-4 text-gray-600 dark:text-gray-400'>
             <div className='flex items-center'>
-              <DateIconSVG />
-              {date}{' '}
-              <span className='ml-1 text-md font-bold text-gray-500 dark:text-gray-300'>
-                {time}
-              </span>
+              <CardDateDisplay utcDate={match.DateUtc} />
             </div>
             {showOdds && (
               <div className='-mt-1 mb-2'>
