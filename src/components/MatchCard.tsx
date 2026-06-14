@@ -6,11 +6,15 @@ import { CardDateDisplay } from './CardDateDisplay'
 
 export default function MatchCard({ match }: { match: Match }) {
   const { homeWin, awayWin } = predictMatch(match.HomeTeam, match.AwayTeam)
-  const isHomeWin = homeWin > awayWin
+  const isHomeWinPredicted = homeWin > awayWin
+  const isHomeWinActual = Number(match.HomeTeamScore) > Number(match.AwayTeamScore)
+  const isDrawActual = match.HomeTeamScore === match.AwayTeamScore
 
   const showOdds = [match.HomeTeam, match.AwayTeam].every(
     e => !checkIfFirstCharIsNumeric(e) && !e.startsWith('To be')
   )
+
+  const showScore = match.HomeTeamScore !== null
 
   return (
     <div className='bg-white dark:bg-[#0005] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
@@ -38,19 +42,37 @@ export default function MatchCard({ match }: { match: Match }) {
                 Odds:{' '}
                 <span>
                   <span
-                    className={isHomeWin ? 'text-green-500' : 'text-red-500'}
+                    className={isHomeWinPredicted ? 'text-green-500' : 'text-red-500'}
                   >
                     {(homeWin * 100).toFixed(2)}%
                   </span>{' '}
                   -{' '}
                   <span
-                    className={isHomeWin ? 'text-red-500' : 'text-green-500'}
+                    className={isHomeWinPredicted ? 'text-red-500' : 'text-green-500'}
                   >
                     {(awayWin * 100).toFixed(2)}%
                   </span>
                 </span>
               </div>
             )}
+            <div className='-mt-3 mb-2'>
+              Score:{' '}
+              <span>
+                {showScore ? (
+                  <>
+                    <span className={isDrawActual ? 'text-yellow-600' : (isHomeWinActual ? 'text-green-500' : 'text-red-500')}>
+                      {match.HomeTeamScore}
+                    </span>{' '}
+                    -{' '}
+                    <span className={isDrawActual ? 'text-yellow-600' : (isHomeWinActual ? 'text-red-500' : 'text-green-500')}>
+                      {match.AwayTeamScore}
+                    </span>
+                  </>
+                ) : (
+                  <span>N/A</span>
+                )}
+              </span>
+            </div>
 
             <div className='flex items-center'>
               <LocationIconSVG />

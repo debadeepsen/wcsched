@@ -1,11 +1,10 @@
 import MatchCard from '@/components/MatchCard'
 import type { Match } from './types/types'
-import { GroupHeading } from '@/components/GroupHeading'
 import CalendarButton from '@/components/CalendarButton'
 
 async function getMatches(): Promise<Match[]> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/world-cup`,
+    'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
     {
       // Choose one:
       // cache: 'force-cache', // static
@@ -59,14 +58,17 @@ export default async function Home() {
           ) : (
             Object.entries(
               matches.reduce(
-                (acc: Record<number, Record<string, Match[]>>, match) => {
-                  const round = match.RoundNumber
-                  const group = match.Group
+                (acc: Record<number, Match[]>, match) => {
+                  const dateObj = new Date(match.DateUtc)
+                  const dateKey = new Date(
+                    dateObj.getFullYear(),
+                    dateObj.getMonth(),
+                    dateObj.getDate()
+                  ).getTime()
 
-                  if (!acc[round]) acc[round] = {}
-                  if (!acc[round][group]) acc[round][group] = []
+                  if (!acc[dateKey]) acc[dateKey] = []
 
-                  acc[round][group].push(match)
+                  acc[dateKey].push(match)
 
                   return acc
                 },
@@ -74,36 +76,36 @@ export default async function Home() {
               )
             )
               .sort((a, b) => Number(a[0]) - Number(b[0]))
-              .map(([round, groups]) => (
-                <div key={round} className='mb-8'>
+              .map(([dateKey, dayMatches]) => {
+                const displayDate = new Date(Number(dateKey)).toLocaleDateString([], {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })
+
+                return (
+                <div key={dateKey} className='mb-8'>
                   <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4'>
-                    Round {round}
+                    {displayDate}
                   </h2>
 
-                  {Object.entries(groups)
-                    .sort((a, b) => a[0].localeCompare(b[0]))
-                    .map(([group, groupMatches]) => (
-                      <div key={group} className='mb-6'>
-                        <GroupHeading group={group} />
+                  <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
+                    {dayMatches
+                      .sort((a, b) => a.MatchNumber - b.MatchNumber)
+                      .map(match => {
+                        const id = `${match.RoundNumber}.${match.MatchNumber}`
 
-                        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
-                          {groupMatches
-                            .sort((a, b) => a.MatchNumber - b.MatchNumber)
-                            .map(match => {
-                              const id = `${match.RoundNumber}.${match.MatchNumber}`
-
-                              return (
-                                <MatchCard
-                                  key={id}
-                                  match={match}
-                                />
-                              )
-                            })}
-                        </div>
-                      </div>
-                    ))}
+                        return (
+                          <MatchCard
+                            key={id}
+                            match={match}
+                          />
+                        )
+                      })}
+                  </div>
                 </div>
-              ))
+                )
+              })
           )}
         </div>
       </div>

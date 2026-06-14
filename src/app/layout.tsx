@@ -2,6 +2,7 @@ import './globals.css';
 import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8000'),
   title: 'World Cup 2026 Schedule',
   description: 'FIFA World Cup 2026 match schedule and fixtures',
   icons: {
