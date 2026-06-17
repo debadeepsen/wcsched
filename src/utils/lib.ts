@@ -163,3 +163,151 @@ export function predictMatch(
 export function checkIfFirstCharIsNumeric(str: string) {
   return typeof str === 'string' && /^\d/.test(str)
 }
+
+export const predictionAccuracy = (
+  team1Prob: number,
+  team2Prob: number,
+  team1Score: number,
+  team2Score: number
+): number => {
+  // Determine actual result
+  const actual =
+    team1Score > team2Score
+      ? 'team1'
+      : team2Score > team1Score
+      ? 'team2'
+      : 'draw'
+
+  const predicted =
+    team1Prob >= team2Prob
+      ? 'team1'
+      : 'team2'
+
+  const confidence = Math.max(
+    team1Prob,
+    team2Prob
+  )
+
+  // 0..1
+  const closeness =
+    1 - Math.abs(
+      team1Prob - team2Prob
+    )
+
+  // 0..1
+  const goalMarginForgiveness =
+    Math.max(
+      0,
+      1 -
+        Math.abs(
+          team1Score - team2Score
+        ) /
+          5
+    )
+
+  // Draw handling
+  if (actual === 'draw') {
+    const score =
+      closeness * 85 +
+      goalMarginForgiveness * 15
+
+    return Math.round(score)
+  }
+
+  // Winner predicted correctly
+  if (predicted === actual) {
+    const score =
+      70 +
+      confidence * 20 +
+      goalMarginForgiveness * 10
+
+    return Math.min(
+      100,
+      Math.round(score)
+    )
+  }
+
+  // Winner predicted incorrectly
+  const score =
+    (1 - confidence) * 60 +
+    goalMarginForgiveness * 10
+
+  return Math.max(
+    0,
+    Math.round(score)
+  )
+}
+
+const lerp = (
+  start: number,
+  end: number,
+  t: number
+) => start + (end - start) * t
+
+const hslToHex = (
+  h: number,
+  s: number,
+  l: number
+) => {
+  l /= 100
+
+  const a =
+    (s * Math.min(l, 1 - l)) / 100
+
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12
+
+    const color =
+      l -
+      a *
+        Math.max(
+          Math.min(
+            k - 3,
+            9 - k,
+            1
+          ),
+          -1
+        )
+
+    return Math.round(
+      255 * color
+    )
+      .toString(16)
+      .padStart(2, '0')
+  }
+
+  return `#${f(0)}${f(8)}${f(4)}`
+}
+
+export const predictionScoreColor = (
+  score: number
+) => {
+  score = Math.max(
+    0,
+    Math.min(100, score)
+  )
+
+  let hue: number
+
+  if (score <= 50) {
+    // red -> amber
+    hue = lerp(
+      0,
+      40,
+      score / 50
+    )
+  } else {
+    // amber -> green
+    hue = lerp(
+      40,
+      130,
+      (score - 50) / 50
+    )
+  }
+
+  return hslToHex(
+    hue,
+    80,
+    40
+  )
+}
