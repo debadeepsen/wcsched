@@ -1,7 +1,8 @@
 import MatchCard from '@/components/MatchCard'
 import type { Match } from './types/types'
 import CalendarButton from '@/components/CalendarButton'
-
+import { isToday } from '@/utils/lib'
+import ScrollToTodayButton from '@/components/ScrollToTodayButton'
 async function getMatches(): Promise<Match[]> {
   const response = await fetch(
     'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
@@ -9,7 +10,7 @@ async function getMatches(): Promise<Match[]> {
       // Choose one:
       // cache: 'force-cache', // static
       // next: { revalidate: 3600 }, // ISR
-      cache: 'no-store', // always fresh
+      cache: 'no-store' // always fresh
     }
   )
 
@@ -32,7 +33,7 @@ export default async function Home() {
             FIFA World Cup 2026
           </h1>
           <p className='text-xl text-red-600 mb-6'>Match Schedule & Fixtures</p>
-          <div className="flex justify-center">
+          <div className='flex justify-center'>
             <CalendarButton matches={matches} />
           </div>
         </header>
@@ -57,58 +58,62 @@ export default async function Home() {
             </div>
           ) : (
             Object.entries(
-              matches.reduce(
-                (acc: Record<number, Match[]>, match) => {
-                  const dateObj = new Date(match.DateUtc)
-                  const dateKey = new Date(
-                    dateObj.getFullYear(),
-                    dateObj.getMonth(),
-                    dateObj.getDate()
-                  ).getTime()
+              matches.reduce((acc: Record<number, Match[]>, match) => {
+                const dateObj = new Date(match.DateUtc)
+                const dateKey = new Date(
+                  dateObj.getFullYear(),
+                  dateObj.getMonth(),
+                  dateObj.getDate()
+                ).getTime()
 
-                  if (!acc[dateKey]) acc[dateKey] = []
+                if (!acc[dateKey]) acc[dateKey] = []
 
-                  acc[dateKey].push(match)
+                acc[dateKey].push(match)
 
-                  return acc
-                },
-                {}
-              )
+                return acc
+              }, {})
             )
               .sort((a, b) => Number(a[0]) - Number(b[0]))
               .map(([dateKey, dayMatches]) => {
-                const displayDate = new Date(Number(dateKey)).toLocaleDateString([], {
+                const displayDate = new Date(
+                  Number(dateKey)
+                ).toLocaleDateString([], {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric'
                 })
 
                 return (
-                <div key={dateKey} className='mb-8'>
-                  <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4'>
-                    {displayDate}
-                  </h2>
+                  <div key={dateKey} className='mb-8'>
+                    <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4 flex'>
+                      <span className='-mt-2'> {displayDate}</span>
 
-                  <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
-                    {dayMatches
-                      .sort((a, b) => a.MatchNumber - b.MatchNumber)
-                      .map(match => {
-                        const id = `${match.RoundNumber}.${match.MatchNumber}`
+                      {isToday(dayMatches?.[0].DateUtc) && (
+                        <span
+                          id='today-tag'
+                          className='flex justify-center items-center -mt-3 ml-2 text-[10px] uppercase font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-0.5 rounded-md tracking-wider'
+                        >
+                          Today
+                        </span>
+                      )}
+                    </h2>
 
-                        return (
-                          <MatchCard
-                            key={id}
-                            match={match}
-                          />
-                        )
-                      })}
+                    <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
+                      {dayMatches
+                        .sort((a, b) => a.MatchNumber - b.MatchNumber)
+                        .map(match => {
+                          const id = `${match.RoundNumber}.${match.MatchNumber}`
+
+                          return <MatchCard key={id} match={match} />
+                        })}
+                    </div>
                   </div>
-                </div>
                 )
               })
           )}
         </div>
       </div>
+      <ScrollToTodayButton />
     </div>
   )
 }
