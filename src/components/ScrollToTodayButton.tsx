@@ -1,27 +1,16 @@
 'use client'
 
 import { Icon } from '@iconify/react'
-import { useEffect, useState } from 'react'
 
 export default function ScrollToTodayButton() {
-  const [hasToday, setHasToday] = useState(false)
-
-  useEffect(() => {
-    // Check if the today tag exists when the component mounts
-    const todayTag = document.getElementById('today-tag')
-    if (todayTag) {
-      setHasToday(true)
-    }
-  }, [])
 
   const scrollToToday = () => {
     const todayTag = document.getElementById('today-tag')
     if (todayTag) {
-      todayTag.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      const top = todayTag.getBoundingClientRect().top - 30;
+      window.scrollTo({ top, behavior: 'smooth' })
     }
   }
-
-  if (!hasToday) return null
 
   return (
     <button
