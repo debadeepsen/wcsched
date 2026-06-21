@@ -9,8 +9,8 @@ async function getMatches(): Promise<Match[]> {
     {
       // Choose one:
       // cache: 'force-cache', // static
-      // next: { revalidate: 3600 }, // ISR
-      cache: 'no-store' // always fresh
+      next: { revalidate: 3600 }, // ISR
+      // cache: 'no-store' // always fresh
     }
   )
 

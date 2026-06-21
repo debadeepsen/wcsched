@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify-react/fluent-emoji-flat": "^1.0.2",
     "cheerio": "^1.2.0",
     "country-flag-icons": "^1.6.17",
     "flag-icons": "^7.5.0",
