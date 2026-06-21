@@ -7,7 +7,7 @@ export default function ScrollToTodayButton() {
   const scrollToToday = () => {
     const todayTag = document.getElementById('today-tag')
     if (todayTag) {
-      const top = todayTag.getBoundingClientRect().top + window.scrollY - 30;
+      const top = todayTag.getBoundingClientRect().top + window.scrollY - 75;
       window.scrollTo({ top, behavior: 'smooth' })
     }
   }
