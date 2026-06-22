@@ -15,3 +15,5 @@ export type MatchPrediction = {
   homeWin: number
   awayWin: number
 }
+
+export type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>

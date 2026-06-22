@@ -116,6 +116,17 @@ export const COUNTRY_ISO2: Record<string, string> = {
   Uzbekistan: 'UZ'
 }
 
+export const TEAM_TO_ISO_URL: Record<string, string> = {
+  ...COUNTRY_ISO2,
+  England: 'ENG',
+  Scotland: 'SCO'
+}
+
+export const ISO_URL_TO_TEAM: Record<string, string> = Object.fromEntries(
+  Object.entries(TEAM_TO_ISO_URL).map(([team, iso]) => [iso.toLowerCase(), team])
+)
+
+
 export function formatMatchDate(utcDateString: string) {
   if (!utcDateString) return { date: 'Not scheduled', time: '' }
 

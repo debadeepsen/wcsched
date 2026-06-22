@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react'
 import { wc_elo } from '@/data/wc_elo'
 import { CountryFlag } from '@/components/CountryFlag'
 import { Icon } from '@iconify/react'
+import Link from 'next/link'
+import { TEAM_TO_ISO_URL } from '@/utils/lib'
 
 type SortKey =
   | 'rank'
@@ -145,10 +147,13 @@ export default function TeamRankingsTable() {
                 >
                   {/* Team name + flag */}
                   <td className='px-3 py-2.5'>
-                    <div className='flex items-center gap-2 whitespace-nowrap'>
+                    <Link
+                      href={`/team/${TEAM_TO_ISO_URL[team.team]?.toLowerCase() || team.team}`}
+                      className='flex items-center gap-2 whitespace-nowrap hover:underline decoration-gray-400 underline-offset-4'
+                    >
                       <CountryFlag team={team.team} />
                       <span className='text-[13px] font-medium text-gray-800 dark:text-gray-200'>{team.team}</span>
-                    </div>
+                    </Link>
                   </td>
 
                   {/* ELO rank */}

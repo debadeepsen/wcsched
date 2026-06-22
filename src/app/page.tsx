@@ -1,8 +1,10 @@
 import MatchCard from '@/components/MatchCard'
-import type { Match } from './types/types'
+import type { Match, SearchParams } from './types/types'
 import CalendarButton from '@/components/CalendarButton'
-import { isToday } from '@/utils/lib'
+import { isToday, ISO_URL_TO_TEAM } from '@/utils/lib'
 import ScrollToTodayButton from '@/components/ScrollToTodayButton'
+import ScheduleFilter from '@/components/ScheduleFilter'
+
 async function getMatches(): Promise<Match[]> {
   const response = await fetch(
     'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
@@ -21,22 +23,43 @@ async function getMatches(): Promise<Match[]> {
   return response.json()
 }
 
-export default async function Home() {
-  const matches = await getMatches()
+export default async function Home({
+  searchParams
+}: {
+  searchParams?: SearchParams
+}) {
+  const allMatches = await getMatches()
+  const resolvedParams = await searchParams
+
+  let matches = allMatches
+
+  const teamFilter =
+    typeof resolvedParams?.team === 'string' ? resolvedParams.team : null
+  const groupFilter =
+    typeof resolvedParams?.group === 'string' ? resolvedParams.group : null
+
+  if (teamFilter) {
+    const teamName = ISO_URL_TO_TEAM[teamFilter.toLowerCase()] || teamFilter
+    matches = matches.filter(m => m.HomeTeam === teamName || m.AwayTeam === teamName)
+  } else if (groupFilter) {
+    matches = matches.filter(m => m.Group === groupFilter)
+  }
 
   return (
     <div className='min-h-screen bg-gray-100 dark:bg-[#1e1b1b]'>
       <div className='container mx-auto px-4 py-8'>
-        <header className='text-center mt-4 mb-12'>
+        <header className='text-center mt-4 mb-8'>
           <h1 className='text-4xl md:text-6xl font-bold dark:font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-6'>
             <img src='/fifawc.png' width={60} height={60} />
             FIFA World Cup 2026
           </h1>
           <p className='text-xl text-red-600 mb-6'>Match Schedule & Fixtures</p>
           <div className='flex justify-center'>
-            <CalendarButton matches={matches} />
+            <CalendarButton matches={allMatches} />
           </div>
         </header>
+
+        <ScheduleFilter />
 
         <div className='mb-8'>
           <div className='bg-yellow-100/50 dark:bg-yellow-800/5 rounded-lg shadow-xs p-6'>
@@ -51,7 +74,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className='w-fit mx-auto'>
+        <div className='w-full max-w-[1600px] mx-auto'>
           {matches.length === 0 ? (
             <div className='text-center bg-white p-8 rounded-lg shadow-lg'>
               <p className='text-gray-600'>No matches found in the schedule.</p>
@@ -83,9 +106,11 @@ export default async function Home() {
                   year: 'numeric'
                 })
 
+                const sortedMatches = dayMatches.sort((a, b) => a.MatchNumber - b.MatchNumber)
+
                 return (
-                  <div key={dateKey} className='mb-8'>
-                    <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4 flex'>
+                  <div key={dateKey} className='mb-8 mt-16'>
+                    <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4 flex justify-center'>
                       <span className='-mt-2'> {displayDate}</span>
 
                       {isToday(dayMatches?.[0].DateUtc) && (
@@ -98,14 +123,11 @@ export default async function Home() {
                       )}
                     </h2>
 
-                    <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-2'>
-                      {dayMatches
-                        .sort((a, b) => a.MatchNumber - b.MatchNumber)
-                        .map(match => {
-                          const id = `${match.RoundNumber}.${match.MatchNumber}`
-
-                          return <MatchCard key={id} match={match} />
-                        })}
+                    <div className='flex w-full flex-wrap gap-6 justify-center'>
+                      {sortedMatches.map(match => {
+                        const id = `${match.RoundNumber}.${match.MatchNumber}`
+                        return <MatchCard key={id} match={match} />
+                      })}
                     </div>
                   </div>
                 )

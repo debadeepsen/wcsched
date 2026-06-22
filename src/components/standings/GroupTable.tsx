@@ -1,5 +1,7 @@
 import type { TeamStanding } from '@/utils/standings'
 import { CountryFlag } from '@/components/CountryFlag'
+import Link from 'next/link'
+import { TEAM_TO_ISO_URL } from '@/utils/lib'
 
 interface GroupTableProps {
   group: string
@@ -70,12 +72,15 @@ export default function GroupTable({ group, rows }: GroupTableProps) {
 
                   {/* Team */}
                   <td className='px-3 py-2.5'>
-                    <div className='flex items-center gap-2'>
+                    <Link
+                      href={`/team/${TEAM_TO_ISO_URL[row.team]?.toLowerCase() || row.team}`}
+                      className='flex items-center gap-2 hover:underline decoration-gray-400 underline-offset-4'
+                    >
                       <CountryFlag team={row.team} />
                       <span className={`text-[13px] leading-tight ${qualifies ? 'font-semibold text-gray-800 dark:text-gray-100' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
                         {row.team}
                       </span>
-                    </div>
+                    </Link>
                   </td>
 
                   {/* Stats */}

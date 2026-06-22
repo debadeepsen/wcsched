@@ -4,10 +4,12 @@ import {
   checkIfFirstCharIsNumeric,
   predictionAccuracy,
   predictionScoreColor,
-  predictMatch
+  predictMatch,
+  TEAM_TO_ISO_URL
 } from '@/utils/lib'
 import { CountryFlag } from './CountryFlag'
 import { CardDateDisplay } from './CardDateDisplay'
+import Link from 'next/link'
 
 export default function MatchCard({ match }: { match: Match }) {
   const { homeWin, awayWin } = predictMatch(match.HomeTeam, match.AwayTeam)
@@ -49,19 +51,25 @@ export default function MatchCard({ match }: { match: Match }) {
   )
 
   return (
-    <div className='bg-white dark:bg-[#0005] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
+    <div className='bg-white dark:bg-[#0005] min-w-[400px] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4'>
       <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
         <div className='flex-1'>
           <div className='flex items-center justify-between mb-4'>
             <div className='flex items-center justify-between bg-red-700/10 dark:bg-red-200/10 w-full p-2 rounded-md text-lg font-semibold text-gray-800 dark:text-white'>
-              <div className='flex items-center text-[#222a] text-red-800/80 dark:text-red-200/80 font-medium dark:font-normal text-sm lg:text-lg'>
+              <Link
+                href={`/team/${TEAM_TO_ISO_URL[match.HomeTeam]?.toLowerCase() || match.HomeTeam}`}
+                className='flex items-center text-[#222a] text-red-800/80 dark:text-red-200/80 font-medium dark:font-normal text-sm lg:text-lg hover:underline decoration-red-400 underline-offset-4'
+              >
                 <CountryFlag team={match.HomeTeam} />
                 {match.HomeTeam}
-              </div>
-              <div className='flex items-center text-[#222a] text-red-800/80 dark:text-red-200/80 font-medium dark:font-normal text-sm lg:text-lg'>
+              </Link>
+              <Link
+                href={`/team/${TEAM_TO_ISO_URL[match.AwayTeam]?.toLowerCase() || match.AwayTeam}`}
+                className='flex items-center text-[#222a] text-red-800/80 dark:text-red-200/80 font-medium dark:font-normal text-sm lg:text-lg hover:underline decoration-red-400 underline-offset-4'
+              >
                 <CountryFlag team={match.AwayTeam} />
                 {match.AwayTeam}
-              </div>
+              </Link>
             </div>
           </div>
 
