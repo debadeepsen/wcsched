@@ -1,22 +1,12 @@
 import { notFound } from 'next/navigation'
-import type { Match } from '@/app/types/types'
 import { ISO_URL_TO_TEAM } from '@/utils/lib'
 import { wc_elo } from '@/data/wc_elo'
 import MatchCard from '@/components/MatchCard'
 import GroupTable from '@/components/standings/GroupTable'
 import { computeGroupStandings } from '@/utils/standings'
-import { CountryFlag } from '@/components/CountryFlag'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
-
-async function getMatches(): Promise<Match[]> {
-  const response = await fetch(
-    'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
-    { cache: 'no-store' }
-  )
-  if (!response.ok) throw new Error('Failed to fetch matches')
-  return response.json()
-}
+import { getMatches } from '@/utils/api'
 
 export default async function TeamPage({
   params
@@ -30,7 +20,7 @@ export default async function TeamPage({
 
   const teamStats = wc_elo.find(t => t?.team === teamName)
 
-  const matches = await getMatches()
+  const matches = await getMatches({ cache: 'no-store' })
 
   // Filter matches for this team
   const teamMatches = matches.filter(

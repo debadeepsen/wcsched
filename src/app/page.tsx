@@ -1,26 +1,16 @@
-import MatchCard from '@/components/MatchCard'
-import type { Match, SearchParams } from './types/types'
-import CalendarButton from '@/components/CalendarButton'
-import { isToday, ISO_URL_TO_TEAM } from '@/utils/lib'
-import ScrollToTodayButton from '@/components/ScrollToTodayButton'
+import type { Metadata } from 'next'
+import HomeHeader from '@/components/HomeHeader'
+import TournamentOverview from '@/components/TournamentOverview'
 import ScheduleFilter from '@/components/ScheduleFilter'
+import MatchList from '@/components/MatchList'
+import ScrollToTodayButton from '@/components/ScrollToTodayButton'
+import { getMatches } from '@/utils/api'
+import { filterMatches } from '@/utils/matches'
+import type { SearchParams } from './types/types'
 
-async function getMatches(): Promise<Match[]> {
-  const response = await fetch(
-    'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
-    {
-      // Choose one:
-      // cache: 'force-cache', // static
-      next: { revalidate: 3600 }, // ISR
-      // cache: 'no-store' // always fresh
-    }
-  )
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch matches')
-  }
-
-  return response.json()
+export const metadata: Metadata = {
+  title: 'FIFA World Cup 2026 Match Schedule & Fixtures',
+  description: 'View the complete match schedule and fixtures for the FIFA World Cup 2026, including teams, groups, match times, and prediction odds.'
 }
 
 export default async function Home({
@@ -28,112 +18,23 @@ export default async function Home({
 }: {
   searchParams?: SearchParams
 }) {
-  const allMatches = await getMatches()
+  const allMatches = await getMatches({ next: { revalidate: 3600 } })
   const resolvedParams = await searchParams
-
-  let matches = allMatches
 
   const teamFilter =
     typeof resolvedParams?.team === 'string' ? resolvedParams.team : null
   const groupFilter =
     typeof resolvedParams?.group === 'string' ? resolvedParams.group : null
 
-  if (teamFilter) {
-    const teamName = ISO_URL_TO_TEAM[teamFilter.toLowerCase()] || teamFilter
-    matches = matches.filter(m => m.HomeTeam === teamName || m.AwayTeam === teamName)
-  } else if (groupFilter) {
-    matches = matches.filter(m => m.Group === groupFilter)
-  }
+  const filteredMatches = filterMatches(allMatches, teamFilter, groupFilter)
 
   return (
     <div className='min-h-screen bg-gray-100 dark:bg-[#1e1b1b]'>
       <div className='container mx-auto px-4 py-8'>
-        <header className='text-center mt-4 mb-8'>
-          <h1 className='text-4xl md:text-6xl font-bold dark:font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-6'>
-            <img src='/fifawc.png' width={60} height={60} />
-            FIFA World Cup 2026
-          </h1>
-          <p className='text-xl text-red-600 mb-6'>Match Schedule & Fixtures</p>
-          <div className='flex justify-center'>
-            <CalendarButton matches={allMatches} />
-          </div>
-        </header>
-
+        <HomeHeader allMatches={allMatches} />
         <ScheduleFilter />
-
-        <div className='mb-8'>
-          <div className='bg-yellow-100/50 dark:bg-yellow-800/5 rounded-lg shadow-xs p-6'>
-            <h2 className='text-2xl font-semibold dark:font-normal text-gray-800 dark:text-gray-200 mb-2'>
-              Tournament Overview
-            </h2>
-            <p className='text-gray-600 dark:text-gray-400'>
-              The 2026 FIFA World Cup will be hosted across 16 cities in the
-              United States, Canada, and Mexico. This will be the first World
-              Cup with 48 teams participating.
-            </p>
-          </div>
-        </div>
-
-        <div className='w-full max-w-[1600px] mx-auto'>
-          {matches.length === 0 ? (
-            <div className='text-center bg-white p-8 rounded-lg shadow-lg'>
-              <p className='text-gray-600'>No matches found in the schedule.</p>
-            </div>
-          ) : (
-            Object.entries(
-              matches.reduce((acc: Record<number, Match[]>, match) => {
-                const dateObj = new Date(match.DateUtc)
-                const dateKey = new Date(
-                  dateObj.getFullYear(),
-                  dateObj.getMonth(),
-                  dateObj.getDate()
-                ).getTime()
-
-                if (!acc[dateKey]) acc[dateKey] = []
-
-                acc[dateKey].push(match)
-
-                return acc
-              }, {})
-            )
-              .sort((a, b) => Number(a[0]) - Number(b[0]))
-              .map(([dateKey, dayMatches]) => {
-                const displayDate = new Date(
-                  Number(dateKey)
-                ).toLocaleDateString([], {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                })
-
-                const sortedMatches = dayMatches.sort((a, b) => a.MatchNumber - b.MatchNumber)
-
-                return (
-                  <div key={dateKey} className='mb-8 mt-16'>
-                    <h2 className='text-2xl font-semibold text-gray-800 dark:font-normal dark:text-gray-200 mb-4 flex justify-center'>
-                      <span className='-mt-2'> {displayDate}</span>
-
-                      {isToday(dayMatches?.[0].DateUtc) && (
-                        <span
-                          id='today-tag'
-                          className='flex justify-center items-center -mt-3 ml-2 text-[10px] uppercase font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-0.5 rounded-md tracking-wider'
-                        >
-                          Today
-                        </span>
-                      )}
-                    </h2>
-
-                    <div className='flex w-full flex-wrap gap-6 justify-center'>
-                      {sortedMatches.map(match => {
-                        const id = `${match.RoundNumber}.${match.MatchNumber}`
-                        return <MatchCard key={id} match={match} />
-                      })}
-                    </div>
-                  </div>
-                )
-              })
-          )}
-        </div>
+        <TournamentOverview />
+        <MatchList matches={filteredMatches} />
       </div>
       <ScrollToTodayButton />
     </div>

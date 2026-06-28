@@ -1,26 +1,17 @@
 import type { Metadata } from 'next'
-import type { Match } from '@/app/types/types'
 import { computeGroupStandings } from '@/utils/standings'
 import GroupTable from '@/components/standings/GroupTable'
 import TeamRankingsTable from '@/components/standings/TeamRankingsTable'
 import StandingsTabs from '@/components/standings/StandingsTabs'
+import { getMatches } from '@/utils/api'
 
 export const metadata: Metadata = {
   title: 'Standings — FIFA World Cup 2026',
   description: 'Live group standings and team rankings for FIFA World Cup 2026'
 }
 
-async function getMatches(): Promise<Match[]> {
-  const response = await fetch(
-    'https://fixturedownload.com/feed/json/fifa-world-cup-2026',
-    { cache: 'no-store' }
-  )
-  if (!response.ok) throw new Error('Failed to fetch matches')
-  return response.json()
-}
-
 export default async function StandingsPage() {
-  const matches = await getMatches()
+  const matches = await getMatches({ cache: 'no-store' })
   const groupStandings = computeGroupStandings(matches)
 
   const totalGroups = Object.keys(groupStandings).length
