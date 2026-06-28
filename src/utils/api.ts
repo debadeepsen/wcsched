@@ -14,5 +14,9 @@ export async function getMatches(options?: RequestInit): Promise<Match[]> {
     throw new Error('Failed to fetch matches')
   }
 
-  return response.json()
+  const data: Match[] = await response.json()
+
+  const indexedData = data.map((m, i) => ({ ...m, MatchIndex: i }))
+
+  return indexedData
 }

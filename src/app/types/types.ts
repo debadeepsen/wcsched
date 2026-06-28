@@ -1,5 +1,6 @@
 export type Match = {
   MatchNumber: number
+  MatchIndex?: number
   RoundNumber: number
   DateUtc: string
   Location: string

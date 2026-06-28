@@ -1,4 +1,4 @@
-import { MatchPrediction } from '@/app/types/types'
+import { Match, MatchPrediction } from '@/app/types/types'
 import { wc_elo } from '@/data/wc_elo'
 
 export const stringToColor = (str: string, opacity?: number) => {
@@ -123,9 +123,11 @@ export const TEAM_TO_ISO_URL: Record<string, string> = {
 }
 
 export const ISO_URL_TO_TEAM: Record<string, string> = Object.fromEntries(
-  Object.entries(TEAM_TO_ISO_URL).map(([team, iso]) => [iso.toLowerCase(), team])
+  Object.entries(TEAM_TO_ISO_URL).map(([team, iso]) => [
+    iso.toLowerCase(),
+    team
+  ])
 )
-
 
 export function formatMatchDate(utcDateString: string) {
   if (!utcDateString) return { date: 'Not scheduled', time: '' }
@@ -264,3 +266,70 @@ export const isToday = (utcDateString?: string) =>
     ? new Date(utcDateString).setHours(0, 0, 0, 0) ===
       new Date().setHours(0, 0, 0, 0)
     : false
+
+export const getTeamName = (name: string) => {
+  if (name === 'To be announced') return 'TBA'
+  if (name === 'IR Iran') return 'Iran'
+  return name
+}
+
+export const calculateMatchesPerGroup = (totalTeams: number, teamsPerGroup: number) => {
+  return (teamsPerGroup * (teamsPerGroup - 1)) / 2
+}
+
+export const getRoundName = (
+  matchIndex?: number,
+  totalTeams: number = 48,
+  teamsPerGroup: number = 4
+) => {
+  if (matchIndex === undefined || matchIndex === null) return ''
+
+  const matchesPerGroup = calculateMatchesPerGroup(totalTeams, teamsPerGroup)
+  const numGroups = Math.ceil(totalTeams / teamsPerGroup)
+  const groupMatches = numGroups * matchesPerGroup
+
+  // If the match falls in the group stage range, return empty
+  if (matchIndex < groupMatches) return ''
+
+  const rawKnockout = numGroups * 2
+  const knockoutTeams = Math.pow(2, Math.ceil(Math.log2(rawKnockout)))
+  const totalMatches = groupMatches + knockoutTeams
+
+  if (matchIndex === totalMatches - 1) return 'Final'
+  if (matchIndex === totalMatches - 2) return '3rd Place'
+  if (matchIndex >= totalMatches - 4) return 'SF'
+  if (matchIndex >= totalMatches - 8) return 'QF'
+  if (matchIndex >= totalMatches - 16) return 'R16'
+  if (matchIndex >= totalMatches - 32) return 'R32'
+
+  return ''
+}
+
+export const getBrierScore = (
+  match: Match,
+  showResult: boolean = true,
+  homeWin: number,
+  awayWin: number
+) => {
+  let brierScore: string | null = null
+  if (showResult) {
+    const homeScoreNum = Number(match.HomeTeamScore)
+    const awayScoreNum = Number(match.AwayTeamScore)
+    let oHome = 0
+    let oAway = 0
+    let oDraw = 0
+
+    if (homeScoreNum > awayScoreNum) oHome = 1
+    else if (homeScoreNum < awayScoreNum) oAway = 1
+    else oDraw = 1
+    // Half Brier score (ranges from 0 to 1)
+    brierScore = (
+      (Math.pow(homeWin - oHome, 2) +
+        Math.pow(awayWin - oAway, 2) +
+        Math.pow(0 - oDraw, 2)) /
+      2
+    ).toFixed(2)
+  }
+
+  return brierScore
+}
